@@ -1,0 +1,55 @@
+---
+- name: Provision k8s cluster
+  proxmox_kvm:
+    agent: yes
+    api_host: "{{ pmx_api_host }}"
+    api_password: "{{ pmx_api_password }}"
+    api_user: "{{ pmx_api_user }}"
+    cores: 2
+    cpulimit: 2
+    ide: '{"ide0":"local:iso/ubuntu-20.04.1-live-server-amd64.iso,media=cdrom"}'
+    memory: 2048
+    name: "{{ item.name }}"
+    net: '{"net0":"virtio,bridge=vmbr0"}'
+    node: pve
+    scsi: '{"scsi0":"local-lvm:32"}'
+    scsihw: virtio-scsi-pci
+    sockets: 1
+    state: present
+    vmid: "{{ item.vmid }}"
+  with_items:
+    - name: node01
+      vmid: 110
+    - name: node02
+      vmid: 111
+    - name: node03
+      vmid: 112
+    - name: node04
+      vmid: 113
+    - name: node05
+      vmid: 114
+
+- name: Deploy VMs
+  proxmox_kvm:
+    api_host: "{{ pmx_api_host }}"
+    api_password: "{{ pmx_api_password }}"
+    api_user: "{{ pmx_api_user }}"
+    name: "{{ item.name }}"
+    state: started
+    vmid: "{{ item.vmid }}"
+  with_items:
+    - name: node01
+      vmid: 110
+    - name: node02
+      vmid: 111
+    - name: node03
+      vmid: 112
+    - name: node04
+      vmid: 113
+    - name: node05
+      vmid: 114
+  register: data_struct
+
+- name: print return values
+  debug:
+    msg: "{{ data_struct }}"

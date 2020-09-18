@@ -1,5 +1,0 @@
----
-- name: Install qemu remote agent
-  apt:
-    name: qemu-guest-agent
-    state: present
